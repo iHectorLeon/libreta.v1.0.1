@@ -1,0 +1,59 @@
+<div class="container">
+  <div class="text-center" style="margin-top:20px;">
+    <h3>Temario</h3>
+  </div>
+  <div *ngFor="let item of block;let indice = index" class="card">
+    <div *ngIf="indice==0 && !item.track">
+      <button type="button" class="btn btn-link " (click)="getBlock(item.id)">
+        <h5>
+          <i class="far fa-flag"></i> Iniciar Curso
+        </h5>
+      </button>
+    </div>
+    <div *ngIf="item.number==0" class="card-header">
+      <div *ngIf="item.track">
+        <button type="button" class="btn btn-link" (click)="getBlock(item.id)">
+          <h5>
+            <i class="far fa-calendar-check"></i> {{item.section}}.{{item.title}}
+          </h5>
+        </button>
+      </div>
+      <div *ngIf="!item.track">
+        <h5>
+          <i class="far fa-calendar-times"></i> {{item.section}}.{{item.title}}
+        </h5>
+      </div>
+      <!--
+      <button type="button" class="btn btn-link" (click)="getBlock(item.id)">
+        <h5>
+          {{item.section}}.{{item.title}}
+        </h5>
+      </button>
+      -->
+    </div>
+    <ul class="list-group list-group-flush">
+      <div *ngIf="item.track">
+        <li *ngIf="item.number!=0" class="list-group-item">
+          <button type="button" class="btn btn-link" (click)="getBlock(item.id)">
+            <i class="far fa-calendar-check"></i> {{item.section}}.{{item.number}} {{item.title}}
+          </button>
+        </li>
+      </div>
+      <div *ngIf="!item.track">
+        <li *ngIf="item.number!=0" class="list-group-item">
+            <i class="far fa-calendar-times"></i> {{item.section}}.{{item.number}} {{item.title}}
+        </li>
+      </div>
+      <!--
+      <li *ngIf="item.number!=0" class="list-group-item">
+        <button type="button" class="btn btn-link" (click)="getBlock(item.id)">
+          {{item.section}}.{{item.number}} {{item.title}}
+        </button>
+      </li>
+      -->
+    </ul>
+  </div>
+  <button type="button" class="btn blockquote btn-success" [routerLink]="['/listcourses']" style="margin-top:20px;">
+    <i class="fas fa-reply"></i> Atras
+  </button>
+</div>

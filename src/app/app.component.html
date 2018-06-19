@@ -1,0 +1,200 @@
+<div *ngIf="identiti">
+  <!--Menú para los usuarios que estan registrados en la plataforma-->
+  <nav *ngIf="identiti" id="navbarlogged" class="navbar fixed-top navbar-expand-lg navbar-light bg-white">
+    <a class="navbar-brand" [routerLink]="['listcourses']">
+      <img src="/assets/img/superatemexico.jpg" width="100" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li *ngIf="identiti && rolUser" class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['mygroups']"><i class="fas fa-graduation-cap"></i> Mis Cursos</a>
+        </li>
+        <li *ngIf="identiti" class="nav-item">
+          <a class="nav-link" [routerLink]="['cursos']"><i class="fas fa-book"></i> Cursos</a>
+        </li>
+        <li *ngIf="identiti && rolSup" class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['charts']"><i class="far fa-chart-bar"></i> Reportes</a>
+        </li>
+        <li *ngIf="identiti && rolAutho" class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['editmanager']"><i class="fas fa-pencil-alt"></i> Editar Cursos</a>
+        </li>
+        <li *ngIf="identiti && rolInstructor" class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['tutorial']"><i class="fab fa-black-tie"></i> Tutorías</a>
+        </li>
+        <li *ngIf="identiti && rolAdmin" class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['admin']"><i class="fas fa-sitemap"></i> Administrador</a>
+        </li>
+        <li *ngIf="identiti && rolOrg" class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['resetpass']"><i class="fas fa-key"></i> Reseteo de Contraseña</a>
+        </li>
+
+      </ul>
+      <hr>
+      <form class="form-inline my-2 my-lg-0">
+        <div ngbDropdown placement="bottom-right" class="d-inline-block">
+          <button class="btn btn-outline-success" id="dropdownBasic2" ngbDropdownToggle><i class="fas fa-user-circle"></i> {{identiti.person.name}}</button>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic2">
+            <!--button class="dropdown-item text-success" (click)="getProfile()"><i class="fas fa-user-circle"></i> Mi Perfil</button-->
+            <button class="dropdown-item text-success" (click)="logout()"><i class="fas fa-sign-out-alt"></i> Cerrar sesion</button>
+            <button class="dropdown-item text-success" (click)="openDialog(changePass)"><i class="fas fa-exchange-alt"></i> Cambiar contraseña</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </nav>
+  <!--Termina el menú de los usuarios tipo alumno-->
+  <!--  -->
+  <ng-template #changePass let-c="close" let-d="dismiss" class="animated fast fadeIn">
+    <!--Encabezado del modal-->
+    <div class="modal-header">
+      <h4 class="modal-title">Cambiar contraseña</h4>
+      <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <!--  -->
+
+    <!--Cuerpo del modal-->
+    <div class="modal-body">
+      <ngb-alert *ngIf="!datosOk" type="danger" (close)="datosOk = true">{{message_er}}</ngb-alert>
+      <ngb-alert *ngIf="datosOkR" type="success" (close)="datosOkR = false">{{message_re}}</ngb-alert>
+      <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="col-md-10">
+        <p>
+          <label for="email">Nueva contraseña</label>
+          <input type="password" class="form-control" #passwordTemp="ngModel" name="passwordTemp" [(ngModel)]="passtemp.passwordTemp" required>
+        </p>
+        <p>
+          <label for="pass">Confirmar contraseña</label>
+          <input type="password" class="form-control" #passwordRTemp="ngModel" name="passwordRTemp" [(ngModel)]="passtemp.passwordRTemp" required>
+        </p>
+        <p>
+          <button type="button" class="btn btn-success" (click)="changePassword()"><i class="fas fa-redo-alt"></i> Cambiar contraseña</button>
+        </p>
+      </form>
+    </div>
+    <!--  -->
+    <!--footer del modal-->
+    <div class="modal-footer">
+      <p>
+        <button type="button" class="btn btn-success" (click)="closeDialog()"><i class="fas fa-times"></i> Cerrar</button>
+      </p>
+    </div>
+    <!---->
+  </ng-template>
+</div>
+
+<div class="clearfix">
+
+</div>
+
+<div *ngIf="!identiti">
+  <!--Menú para la vista publica-->
+  <nav id="navbar" class="navbar fixed-top navbar-expand-lg navbar-light bg-white">
+    <a class="navbar-brand" [routerLink]="['home']">
+      <img src="/assets/img/superatemexico.jpg" width="100" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['cursos']"><i class="fas fa-book"></i> Cursos</a>
+        </li>
+        <li class="nav-item" routerLinkActive="active">
+          <a class="nav-link" [routerLink]="['guias']" ><i class="fas fa-map-signs"></i> Guia del usuario</a>
+        </li>
+      </ul>
+      <p>
+        <a href="https://superatemexico.freshdesk.com/support/solutions/articles/36000018791--c%C3%B3mo-me-registro-en-sup%C3%A9rate-m%C3%A9xico-" target="_blank" placement="left" ngbTooltip="¿Cómo me registro en Supérate México?" class="btn-outline-success">Ayuda <i class="far fa-question-circle"></i> </a>
+        <button class="btn btn-outline-success" type="button" [routerLink]="['/signin']">
+          <i class="fas fa-user-plus"></i>
+          Regístrate
+        </button>
+        <button class="btn btn-outline-success" type="button" (click)="openDialog(content)">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión
+        </button>
+      </p>
+    </div>
+  </nav>
+  <!--Termina el menú para la vista publica-->
+
+  <!--Ventana emergente del modal para el inicio de sesion-->
+  <ng-template #content let-c="close" let-d="dismiss" class="animated fast fadeIn">
+    <!--Encabezado del modal-->
+    <div class="modal-header">
+      <h4 class="modal-title">Iniciar Sesion</h4>
+      <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <!--  -->
+    <!--Cuerpo del modal-->
+    <div class="modal-body">
+      <wizard>
+        <wizard-step navigationSymbol="1">
+          <ngb-alert *ngIf="!datosOk" type="danger" (close)="datosOk = true">{{message_er}}</ngb-alert>
+          <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="col-md-10">
+            <p>
+              <label for="email">Usuario o correo electrónico</label>
+              <input type="text" class="form-control" #username="ngModel" name="username" [(ngModel)]="login.username" required>
+            </p>
+            <p>
+              <label for="pass">Contraseña</label>
+              <input type="password" class="form-control" #password="ngModel" name="password" [(ngModel)]="login.password" required>
+            </p>
+            <p>
+              <button type="submit" value="Ingresar" class="btn btn-success"><i class="fas fa-check"></i> Ingresar</button>
+              <button type="button" class="btn btn-success" (click)="closeDialog()"><i class="fas fa-times"></i> Cancelar</button>
+            </p>
+          </form>
+          <hr>
+          <button type="button" class="btn btn-success btn-sm" nextStep><i class="far fa-question-circle"></i> ¿olvidaste tu contraseña?</button>
+        </wizard-step>
+        <wizard-step>
+          <div class="alert alert-secondary" role="alert">
+            <p>
+              <li>
+                El correo electrónico que ingreses, debe ser el mismo correo con el que estas registrado en la plataforma.
+              </li>
+            </p>
+          </div>
+          <ngb-alert *ngIf="datosOkR" type="success" (close)="datosOkR = false">{{message_re}}</ngb-alert>
+          <ngb-alert *ngIf="!datosOk" type="danger" (close)="datosOk = true">{{message_er}}</ngb-alert>
+          <form class="col-md-10">
+            <p>
+              <label for="email">Ingresa tu correo electrónico</label>
+              <input type="text" class="form-control" #username="ngModel" name="username" [(ngModel)]="login.username" required>
+            </p>
+            <p>
+              <button type="button" class="btn btn-success" (click)="recoverPassword()"><i class="far fa-window-restore"></i> Recuperar contraseña</button>
+            </p>
+          </form>
+          <hr>
+          <button type="button" class="btn btn-success btn-sm" previousStep><i class="fas fa-sign-in-alt"></i> Iniciar sesion</button>
+        </wizard-step>
+      </wizard>
+    </div>
+    <!--  -->
+  </ng-template>
+  <!---->
+</div>
+<!--Contenedor para las demas vistas de la plataforma-->
+<div class="main-container">
+  <router-outlet></router-outlet>
+</div>
+<!--  -->
+
+<!--Pie de pagina-->
+<nav class="navbar fixed-bottom navbar-light bg-light">
+  <p class="font-weight-light">
+    <i class="fas fa-power-off"></i> POWERED BY ACL Systems S.A. de C.V.
+    <a [routerLink]="['/avisoprivacidad']">Aviso de privacidad</a>
+  </p>
+
+</nav>
+<!---->

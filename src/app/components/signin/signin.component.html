@@ -1,0 +1,169 @@
+<div class="container">
+  <form #userform="ngForm" (ngSubmit)="onSubmit()" class="was-validated">
+    <div class="row" style="margin-top:15px;">
+      <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+          <p>Qué tal. Si estás ingresando aquí por la convocatoria de capacitación dirigida que envió La Comisión Mixta Estatal SEPH-SNTE del Sistema de Desarrollo Profesional de Carrera (SDPC), te informamos que debes realizar tu registro al curso deseado en: <a href="http://sidepaaeh.seph.gob.mx" target="_blank"> http://sidepaaeh.seph.gob.mx </a> antes de registrarte en este portal. El curso al que te hayas registrado estará disponible en este portal a partir del día 14 de Mayo del 2018.</p>
+          <p>Gracias</p>
+        </div>
+        <!--wizard navBarLocation="bottom">
+          <wizard-step navigationSymbol="1">
+            <h4 class="text-center">Ingresa tus datos personales</h4>
+
+            <span *ngIf="messa_err_per!=null" class="text-danger">
+              {{messa_err_per}}
+            </span>
+
+            <p>
+              <label for="name">*Nombre</label>
+              <input type="text" class="form-control" #name="ngModel" name="name" [(ngModel)]="person.name" required>
+            </p>
+
+            <p>
+              <label for="surname">*Apellido Paterno</label>
+              <input type="text" class="form-control" #fatherName="ngModel" name="fatherName" [(ngModel)]="person.fatherName" required>
+            </p>
+
+            <p>
+              <label for="surname">*Apellido Materno</label>
+              <input type="text" class="form-control" #motherName="ngModel" name="motherName" [(ngModel)]="person.motherName" required>
+            </p>
+
+            <button type="button" class="btn btn-success" [goToStep]="datosPersonales()">
+              Siguiente
+              <i class="fas fa-angle-right"></i>
+            </button>
+
+          </wizard-step>
+
+          <wizard-step >
+            <span *ngIf="messa_err_org!=null" class="text-danger">
+              {{messa_err_org}}
+            </span>
+            <select #type="ngModel" [(ngModel)]="student.type" name="type" (change)="typeU()" class="form-control" required>
+              <option value="">Tipo de Alumno</option>
+              <option value="internal">Alumno interno</option>
+              <option value="external">Usuario externo</option>
+            </select>
+            <hr>
+            <div *ngIf="usertype!=null&&usertype!=''&&usertype!='external'" class="">
+              <h4 class="text-center">Selecciona el plantel que te corresponde</h4>
+
+              <select #state="ngModel" [(ngModel)]="st.state" name="state" (change)="verPlantel()" class="form-control" required>
+                <option value="">Selecciona un estado</option>
+                <option  *ngFor="let item of statesorg">
+                  {{item.longName}}
+                </option>
+              </select>
+              <hr>
+
+              <select #orgUnit="ngModel" [(ngModel)]="usertemp.orgUnit" name="orgUnit" class="form-control" required>
+                <option value="">Selecciona tu plantel</option>
+                <option *ngFor="let item of orgUS">
+                  {{item.longName}}
+                </option>
+              </select>
+              <hr>
+              <h4 class="text-center">Selecciona tu carrera</h4>
+              <select #area="ngModel" [(ngModel)]="ar.area" name="area" class="form-control" (change)="verCarrera()" required>
+                <option value="">Selecciona un área</option>
+                <option *ngFor="let item of areadata">
+                  {{item}}
+                </option>
+              </select>
+              <hr>
+              <select #career="ngModel" [(ngModel)]="student.career" name="career" class="form-control" required>
+                <option value="">Selecciona tu carrera</option>
+                <option *ngFor="let item of carrerasList">
+                  {{item.longName}}
+                </option>
+              </select>
+              <hr>
+              <h4>Actualmente curso:</h4>
+              <select #term="ngModel" [(ngModel)]="student.term" name="term" class="form-control" required>
+                <option value="">Selecciona una opción</option>
+                <option *ngFor="let item of typesdata">
+                  {{item.name}}
+                </option>
+              </select>
+              <hr>
+            </div>
+            <div *ngIf="usertype!=null&&usertype!=''&&usertype!='internal'" class="">
+              <select #state="ngModel" [(ngModel)]="st.state" name="state" (change)="verPlantel()" class="form-control" required>
+                <option value="">Selecciona un estado</option>
+                <option  *ngFor="let item of statesorg">
+                  {{item.longName}}
+                </option>
+              </select>
+              <hr>
+              <select #orgUnit="ngModel" [(ngModel)]="usertemp.orgUnit" name="orgUnit" class="form-control" required>
+                <option value="">Selecciona tu plantel de afiliación</option>
+                <option *ngFor="let item of orgUS">
+                  {{item.longName}}
+                </option>
+              </select>
+              <hr>
+              <select #external="ngModel" [(ngModel)]="studentE.external" name="external" (change)="origU()" class="form-control" required>
+                <option value="">Provengo de</option>
+                <option value="private">Empresa Privada</option>
+                <option value="public">Institucion Pública</option>
+                <option value="particular">Particular</option>
+              </select>
+              <hr>
+              <div *ngIf=" userorig!=null && userorig!='' && userorig=='public'">
+                <select #origin="ngModel" [(ngModel)]="studentE.origin" name="origin" class="form-control" required>
+                  <option value="">Selecciona la institución pública a la que perteneces</option>
+                  <option value="Gobierno del estado de Morelos">Gobierno del estado de Morelos</option>
+                  <option value="Secretaría de Hacienda y Crédito público">Secretaría de Hacienda y Crédito público</option>
+                </select>
+              </div>
+            </div>
+            <button type="button" class="btn btn-success" style="margin-top:15px;" previousStep>
+              <i class="fas fa-angle-left"></i>
+              Regresar
+            </button>
+            <button type="button" class="btn btn-success" style="margin-top:15px;" [goToStep]="datosOrgs()">
+              Siguiente
+              <i class="fas fa-angle-right"></i>
+            </button>
+          </wizard-step>
+          <wizard-step>
+            <h4>Ingresa un usuario y una contraseña</h4>
+            <ngb-alert *ngIf="messa_suc" type="success" (close)="datosOk = true">{{messa_suc}}</ngb-alert>
+            <ngb-alert *ngIf="!datosOk" type="danger" (close)="datosOk = true">{{messa_err}}</ngb-alert>
+            <p>
+              <label for="email">*Correo electrónico</label>
+              <input type="text" class="form-control" #email="ngModel" name="email" [(ngModel)]="person.email" aria-describedby="userherlp" required>
+              <small id="userherlp" class="form-text text-muted">*Con tu cuenta de correo electrónico podras tener acceso a la plataforma</small>
+            </p>
+            <p>
+              <label for="pass">*Ingresa una contraseña a tu elección</label>
+              <input type="password" class="form-control" #password="ngModel" name="pass" [(ngModel)]="usertemp.password" aria-describedby="passhelp" required>
+              <small id="passhelp" class="form-text text-muted">*Anota esta contraseña en lugar seguro y/o recuérdala</small>
+            </p>
+            <p>
+            <button type="button" class="btn btn-success" previousStep>
+              <i class="fas fa-angle-left"></i>
+              Regresar
+            </button>
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-check"></i>
+              Registrarme
+            </button>
+            </p>
+          </wizard-step>
+        </wizard -->
+        <hr>
+        <div class="container">
+          <p class="font-italic" style="<font-size:10px">
+          ACL SYSTEMS S.A. de C.V. (nombre comercial: ACL SYSTEMS) con domicilio en Rio Coahuayana 12, Colinas Del Lago, Cuautitlán Izcalli, México, C.P.54744,
+          manifiesta que sus datos personales serán utilizados para fines de contacto, para permitir el registro en el sitio, para acceder al contenido del sitio,
+          para facturación y cobro, para envío de publicidad. Para conocer mayor información sobre los términos y condiciones en que serán tratados sus datos personales,
+          como los terceros con quienes compartimos su información personal y la forma en que podrá ejercer sus derechos ARCO, puede consultar el Aviso de Privacidad Integral
+          en nuestro sitio: <a [routerLink]="['/avisoprivacidad']">Aviso de privacidad</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,11 @@
+<div *ngIf="identiti" class="container">
+  <h1 class="display-3 text-center">Mis Cursos</h1>
+  <hr>
+  <div class="card animated fadeIn fast" *ngFor="let crs of cursoslist, let id=index">
+    <div class="card-header">
+      <button type="button" class="btn btn-link enlace" (click)="getMycourse(crs.course, crs.groupid, crs.courseid, crs.lastSeenBlock, crs.firstBlock)">
+        <h6><i class="far fa-arrow-alt-circle-right"></i> {{crs.course}} CLAVE: {{crs.courseCode}}</h6>
+      </button>
+    </div>
+  </div>
+</div>

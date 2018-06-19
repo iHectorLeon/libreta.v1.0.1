@@ -1,0 +1,878 @@
+<div class="container" style="position-relative;">
+  <nav id="courseReading" class="navbar navbar-light bg-white fixed-top">
+    <a class="navbar-brand">
+      <img src="/assets/img/superatemexico.jpg" width="100" alt="">
+    </a>
+
+    <a class="navbar-brand">{{block}}</a>
+    <!--Seccion de botones para controlar los bloques-->
+    <form class="form-inline">
+      <!--Seccion de botones de herramientas de la seccion de bloques-->
+      <div class="btn-group  mr-2" role="group">
+
+        <!--Boton para regresar a la seccion de mis cursos-->
+        <button type="button" class="btn btn-success" placement="bottom" ngbTooltip="Regresar" (click)="returnCourse()">
+          <i class="fas fa-reply"></i>
+        </button>
+        <!---->
+
+        <!--Boton de temario-->
+        <button type="button" class="btn btn-success" placement="bottom" ngbTooltip="Temario" (click)="showTemary(content)">
+          <i class="fas fa-list-ol"></i>
+        </button>
+        <!--  -->
+
+        <!--Boton de recursos-->
+        <button type="button" class="btn btn-success" placement="bottom" ngbTooltip="Material de apoyo" (click)="showResources(resources)">
+          <i class="fas fa-paperclip"></i>
+        </button>
+        <!--  -->
+
+      </div>
+      <!--  -->
+
+      <!--Boton para regresar la leccion-->
+      <div *ngIf="blockPrev" class="">
+        <button class="btn btn-sm btn success" type="button" placement="bottom" ngbTooltip="Lección anterior" (click)="getBlock(blockPrev, false)"><i class="fas fa-chevron-left"></i> Anterior</button>
+      </div>
+      <!--  -->
+
+      <!--Boton para la siguiente leccion-->
+      <div *ngIf="!blockNext" class="">
+        <button class="btn btn-sm btn-success" type="button" placement="bottom" ngbTooltip="Siguiente lección" disabled>Siguiente <i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div *ngIf="blockNext" class="">
+        <button class="btn btn-sm btn-success" type="button" placement="bottom" ngbTooltip="Siguiente lección"  (click)="getBlock(blockNext, true)">Siguiente <i class="fas fa-chevron-right"></i></button>
+      </div>
+      <!--  -->
+
+    </form>
+    <!--    -->
+  </nav>
+
+  <!--
+  *********************************
+  Vista de la sección de los cursos
+  *********************************
+  -->
+  <div *ngIf="blockmessageUser">
+    <div class="alert alert-warning" role="alert">
+      <h5><i class="fas fa-bullhorn"></i> {{blockmessageUser}}</h5>
+    </div>
+  </div>
+  <div *ngIf="blockmessage_error" class="alert alert-warning" role="alert">
+    <h5><i class="fas fa-bullhorn"></i> {{blockmessage_error}}</h5>
+  </div>
+  <div *ngIf="blockNumber=='0'" data-spy="scroll" data-target="#courseReading" data-offset="0" style="margin-bottom:15px;">
+
+    <!--Titulo de la seccion-->
+    <h1 class="display-5" style="margin-top:25px;">
+      {{blockTitle}}
+    </h1>
+    <hr>
+    <!--  -->
+
+    <!--Contenedor del video para los cursos-->
+    <div *ngIf="vervideo && blockBegin">
+      <iframe width="100%" height="400" [src]=" blockMedia | videos" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <hr>
+    </div>
+    <!--  -->
+
+    <!--Contenido HTML de la seccion-->
+    <div [innerHTML]="blocContent">
+
+    </div>
+    <!--  -->
+
+    <!--Seccion del cuestionario cuando aplica a una sección-->
+    <div *ngIf="blockQuiz != null">
+      <div *ngIf="isValidateAttemp">
+        <div class="alert alert-secondary" role="alert">
+          <span>Has usado {{totalattemp}} de {{maxAttempts}} intentos permitidos</span>
+        </div>
+      </div>
+
+      <div *ngIf="!isValidateAttemp">
+        <div class="alert alert-danger" role="alert">
+          <span>Has agotado los intentos permitidos</span>
+        </div>
+      </div>
+
+      <div *ngFor="let item of questionsBlock;let idQ = index">
+        <div *ngIf="item.label">
+          <span class="text-success" style="margin-bottom:15px;"><i class="fas fa-info-circle"></i> {{item.label}} {{item.help}} </span>
+        </div>
+        <div *ngIf="!item.label">
+          <span class="text-success" style="margin-bottom:15px;"><i class="fas fa-info-circle"></i> Pregunta {{idQ+1}} {{item.help}}</span>
+        </div>
+        <!--Headers de las preguntas-->
+        <div *ngIf="item.header">
+          <div [innerHTML]="item.header">
+
+          </div>
+        </div>
+        <!---->
+
+        <!--Seccion html del cuerpo de la pregunta-->
+        <div [innerHTML]="item.text">
+
+        </div>
+        <!--Para las preguntas que tengan pie de pagina-->
+        <div *ngIf="item.footer">
+          <span class="text-success text-justify">
+            <i class="fas fa-quote-left"></i>
+            <p>
+              {{item.footer}}
+            </p>
+          </span>
+        </div>
+        <!--  -->
+
+        <!--Seccion para el tipo de respuesta en optativas-->
+        <div *ngIf="item.type == 'option'" style="margin-top:15px;">
+          <div *ngFor="let itemOpt of item.options;let idOpt=index">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" [name]="idQ" id="idQ" value="itemOpt.value" (change)="getAnswer(idQ, idOpt)" >
+              <label class="form-check-label" for="exampleRadios1">
+                {{itemOpt.value}}
+              </label>
+            </div>
+          </div>
+          <hr>
+        </div>
+        <!--   -->
+
+        <!--Seccion para el tipo de preguntas map-->
+        <div *ngIf="item.type == 'map'" style="margin-top:15px;">
+          <div class="row" *ngFor="let itemmap of item.group">
+            <div class="col-6">
+              <div class="card">
+                <div class="card-header">
+                  <div [innerHTML]="itemmap">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <select class="form-control" (change)="getAnswer(itemopt.name, itemopt.value)" required >
+                <option value="" selected>--</option>
+                <option *ngFor="let itemopt of item.options">{{itemopt.name}} {{itemopt.value}}</option>
+              </select>
+            </div>
+          </div>
+          <hr>
+        </div>
+        <!---->
+
+        <!--Seccion para el tipo de preguntas group-->
+        <div *ngIf="item.type == 'group'" style="margin-top:15px;">
+          <div class="row" *ngFor="let itemmap of item.group">
+
+            <div class="col-6">
+              <div class="card">
+                <div class="card-header">
+                  <div [innerHTML]="itemmmap">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <input type="text" class="form-control" #answer="ngModel" [name]="answer" [(ngModel)]="answerstxttMG.answer">
+            </div>
+
+          </div>
+          <hr>
+        </div>
+        <!---->
+
+        <!--Seccion para el tipo de respuesta en texto-->
+        <div *ngIf="item.type == 'text'" style="margin-top:15px;">
+          <textarea class="form-control" rows="3" draggable="false"></textarea>
+          <hr>
+        </div>
+        <!--   -->
+
+        <!--Seccion para el tipo de respuesta en true o false-->
+        <div *ngIf="item.type == 'tf'" style="margin-top:15px;">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [name]="idQ" id="idQ" value="true" (change)="getAnswer(idQ, 'true')">
+            <label class="form-check-label" for="idQ">
+              Verdadero
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [name]="idQ" id="idQ" value="false" (change)="getAnswer(idQ, 'false')">
+            <label class="form-check-label" for="idQ">
+              Falso
+            </label>
+          </div>
+          <hr>
+        </div>
+        <!--  -->
+
+      </div>
+      <!--Boton para revisar las respuestas del usuario vs respuestas correctas-->
+      <div *ngIf="isValidateAttemp">
+        <button type="button" class="btn btn-success blockquote" (click)="showAccept(accept)">
+          <i class="fas fa-check-circle"></i> Validar mis respuestas
+        </button>
+      </div>
+      <div *ngIf="!isValidateAttemp">
+        <button type="button" class="btn btn-success blockquote" disabled>
+          <i class="fas fa-check-circle"></i> Validar mis respuestas
+        </button>
+      </div>
+    </div>
+    <!--  -->
+
+    <!--Seccion de las tareas para el bloque-->
+      <div *ngIf="blockTask">
+        <div *ngFor="let itemTask of blockTask">
+          <hr>
+          <span class="text-success" style="margin-bottom:15px;"><i class="fas fa-thumbtack"></i> {{itemTask.label}}</span>
+          <div [innerHTML]="itemTask.text">
+
+          </div>
+          <div *ngIf="itemTask.type == 'textarea'">
+            <textarea class="form-control" rows="3" draggable="false"></textarea>
+          </div>
+          <div *ngIf="itemTask.type == 'text'">
+            <input type="text" class="form-control">
+          </div>
+          <div *ngIf="itemTask.type == 'file'">
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="customFileLang">
+              <label class="custom-file-label" for="customFileLang"> </label>
+            </div>
+          </div>
+        </div>
+        <hr>
+      </div>
+    <!---->
+
+    <!--Contenedor del video para los cursos-->
+    <div *ngIf="vervideo && !blockBegin">
+      <iframe width="100%" height="400" [src]=" blockMedia | videos" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <hr>
+    </div>
+    <!--  -->
+  </div>
+
+  <!--
+  *********************************
+  Termina la vista de las secciones
+  *********************************
+  -->
+
+  <!--
+  *********************************
+  Vista de la lección de los cursos
+  *********************************
+  -->
+  <div *ngIf="blockNumber!='0'" data-spy="scroll" data-target="#courseLessonReading" data-offset="0" style="margin-bottom:15px;">
+    <ngb-tabset [justify]="justified">
+      <ngb-tab>
+        <ng-template ngbTabTitle>
+          <div class="text-success">
+            <i class="fas fa-book"></i> Contenido
+          </div>
+        </ng-template>
+        <!---->
+        <ng-template ngbTabContent>
+          <!--Titulo de la leccion-->
+          <h5 style="margin-top:20px;">
+            {{blockSection}}.{{blockNumber}}. {{blockTitle}}
+          </h5>
+          <hr>
+
+          <!--Contenedor del video para los cursos-->
+          <div *ngIf="vervideo && blockBegin">
+            <iframe width="100%" height="400" [src]=" blockMedia | videos" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <hr>
+          </div>
+          <!--  -->
+
+          <!--Contenido de la leccion-->
+          <div [innerHTML]="blocContent">
+
+          </div>
+          <!---->
+
+      <!--Seccion de los cuestionarios en las lecciones-->
+      <div *ngIf="blockQuiz != null">
+        <div *ngIf="isValidateAttemp">
+          <div class="alert alert-secondary" role="alert">
+            <span>Has usado {{totalattemp}} de {{maxAttempts}} intentos permitidos</span>
+          </div>
+        </div>
+
+        <div *ngIf="!isValidateAttemp">
+          <div class="alert alert-danger" role="alert">
+            <span>Has agotado los intentos permitidos</span>
+          </div>
+        </div>
+
+        <div *ngFor="let item of questionsBlock;let idQ = index">
+          <div *ngIf="item.label">
+            <span class="text-success" style="margin-bottom:15px;"><i class="fas fa-info-circle"></i> {{item.label}} {{item.help}} </span>
+          </div>
+          <div *ngIf="!item.label">
+            <span class="text-success" style="margin-bottom:15px;"><i class="fas fa-info-circle"></i> Pregunta {{idQ+1}} {{item.help}}</span>
+          </div>
+          <!--Headers de las preguntas-->
+          <div *ngIf="item.header">
+            <div [innerHTML]="item.header">
+
+            </div>
+          </div>
+          <!---->
+
+          <div [innerHTML]="item.text">
+
+          </div>
+
+          <!--Para las preguntas que tengan pie de pagina-->
+          <div *ngIf="item.footer">
+            <span class="text-success text-justify">
+              <i class="fas fa-quote-left"></i>
+              <p>
+                {{item.footer}}
+              </p>
+            </span>
+          </div>
+          <!--  -->
+
+          <!--Seccion para el tipo de respuesta en optativas-->
+          <div *ngIf="item.type == 'option'" style="margin-top:15px;">
+            <div *ngFor="let itemOpt of item.options;let idOpt=index">
+              <div class="form-check was-validated">
+                <input class="form-check-input" type="radio" [name]="idQ" id="idQ" value="itemOpt.value" (change)="getAnswer(idQ, idOpt)" >
+                <label class="form-check-label" for="exampleRadios1">
+                  {{itemOpt.value}}
+                </label>
+              </div>
+            </div>
+            <hr>
+          </div>
+          <!--  -->
+
+          <!--Seccion para el tipo de preguntas map-->
+          <div *ngIf="item.type == 'map'" style="margin-top:15px;">
+            <div *ngFor="let itemmap of item.group; let idMap = index">
+              <div class="row" >
+                <div class="col-3">
+                  <div class="alert alert-success" role="alert">
+                    <div [innerHTML]="itemmap">
+
+                    </div>
+                  </div>
+                </div>
+                <div class="col-9">
+                  <form class="form-inline ">
+                    <div class="form-group" *ngFor="let itemopt of item.options;let idOpcMap = index">
+                      <input class="form-check-input" type="radio" [name]="idMap" value="itemopt.value" (change)="getAnswersMap(idMap, idOpcMap, idQ)">
+                      <label class="form-control-plaintext">{{itemopt.value}}</label>
+                      <hr>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <hr>
+          </div>
+          <!---->
+
+          <!--Seccion para el tipo de preguntas group-->
+          <div *ngIf="item.type == 'group'" style="margin-top:15px;">
+
+            <div *ngIf="item.display.length != 0">
+
+              <div *ngFor="let itemmap of item.group;let indexopt = index;">
+
+                <div *ngFor="let ordercomp of item.display;let indexorder = index;">
+                  <div *ngIf="indexorder == indexopt">
+
+                    <div *ngIf="ordercomp == 0" class="row">
+                      <div class="col-6">
+                        <input type="text" class="form-control" #answer (blur)="getAnswersMap(indexopt, answer.value, idQ)">
+                      </div>
+                      <div class="col-6">
+                        <div class="alert alert-success" role="alert">
+                          <div [innerHTML]="itemmap">
+
+                          </div>
+                        </div>
+                        <hr>
+                      </div>
+                    </div>
+
+                    <div *ngIf="ordercomp == 1" class="row">
+                      <div class="col-6">
+                        <div class="alert alert-success" role="alert">
+                          <div [innerHTML]="itemmap">
+
+                          </div>
+                        </div>
+                        <hr>
+                      </div>
+                      <div class="col-6">
+                        <input type="text" class="form-control" #answer (blur)="getAnswersMap(indexopt, answer.value, idQ)">
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="item.display.length == 0">
+              <div class="row" *ngFor="let itemmap of item.group;let idquestion = index;">
+                <div class="col-6">
+                  <div class="alert alert-success" role="alert">
+                    <div [innerHTML]="itemmap">
+
+                    </div>
+                  </div>
+                  <hr>
+                </div>
+                <div class="col-6">
+                  <input type="text" class="form-control" #answer (blur)="getAnswersMap(idquestion, answer.value, idQ, text)">
+                </div>
+              </div>
+            </div>
+            <hr>
+          </div>
+          <!---->
+
+
+          <!--Seccion para el tipo de respuesta en texto-->
+          <div *ngIf="item.type == 'text'" style="margin-top:15px;">
+            <textarea class="form-control" rows="3" draggable="false"></textarea>
+            <hr>
+          </div>
+          <!--  -->
+
+          <!--Seccion para el tipo de respuesta en true o false-->
+          <div *ngIf="item.type == 'tf'" style="margin-top:15px;">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" [name]="idQ" id="idQ" value="true" (change)="getAnswer(idQ, 'true')">
+              <label class="form-check-label" for="idQ">
+                Verdadero
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" [name]="idQ" id="idQ" value="false" (change)="getAnswer(idQ, 'false')">
+              <label class="form-check-label" for="idQ">
+                Falso
+              </label>
+            </div>
+            <hr>
+          </div>
+          <!--  -->
+        </div>
+        <!--Terminan las preguntas-->
+
+        <!--Boton para revisar las respuestas del usuario vs respuestas correctas-->
+        <div *ngIf="isValidateAttemp">
+          <button type="button" class="btn btn-success blockquote" (click)="showAccept(accept)">
+            <i class="fas fa-check-circle"></i> Validar mis respuestas
+          </button>
+        </div>
+        <div *ngIf="!isValidateAttemp">
+          <button type="button" class="btn btn-success blockquote" disabled>
+            <i class="fas fa-check-circle"></i> Validar mis respuestas
+          </button>
+        </div>
+        <!---->
+      </div>
+      <!--Terminan los cuestionarios-->
+
+      <!--Seccion de las tareas para el bloque-->
+      <div *ngIf="blockTask">
+
+        <div *ngIf="expression" class="alert alert-success" role="alert">
+
+        </div>
+        <div *ngFor="let itemTask of blockTask">
+          <hr>
+          <span class="text-success" style="margin-bottom:15px;"><i class="fas fa-thumbtack"></i> {{itemTask.label}}</span>
+          <div [innerHTML]="itemTask.text">
+
+          </div>
+          <div *ngIf="itemTask.type == 'textarea'">                                             <!-- content:any,type:any,label:any-->
+            <textarea class="form-control" rows="3" draggable="false" #answerTaskTA (blur)="setTask(answerTaskTA.value, 'text', itemTask.label)"></textarea>
+          </div>
+          <div *ngIf="itemTask.type == 'text'">
+            <input type="text" class="form-control" #answerTaskTxt (blur)="setTask(answerTaskTxt.value, 'text', itemTask.label)">
+          </div>
+          <div *ngIf="itemTask.type == 'file'">
+              <input type="file" (change)="uploadFile($event,itemTask.label)">
+          </div>
+        </div>
+        <hr>
+        <div *ngIf="isSendTask" class="alert alert-success" role="alert">
+          <h5>Se guardó la actividad exitosamente</h5>
+        </div>
+        <button *ngIf="isAttachmen" type="button" class="btn btn-success" name="button" (click)="showAccept(modalTask)"><i class="fas fa-thumbtack"></i> Enviar</button>
+      </div>
+      <!---->
+
+      <!--Seccion para embeber el video cuando en la etiqueta venga al final-->
+      <div *ngIf="vervideo && !blockBegin">
+        <iframe width="100%" height="400" [src]=" blockMedia | videos" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <hr>
+      </div>
+      <!--  -->
+
+    </ng-template>
+
+    </ngb-tab>
+    <!--Termina la leccion-->
+
+    <!--Pestaña de preguntas frecuentes-->
+    <div class="" *ngIf="blockQuiz == null && !blockTask">
+    <!--Comienza la seccion de las preguntas frecuentes-->
+      <ngb-tab>
+        <ng-template ngbTabTitle>
+          <div class="text-success">
+            <i class="fas fa-question"></i> Dudas y comentarios
+          </div>
+        </ng-template>
+        <ng-template ngbTabContent>
+          <button class="btn btn-success blockquote" style="margin-top:15px" type="button" (click)="shownewDoubt(newDoubtComment)"><i class="fas fa-tag"></i> Envia tu duda o comentario acerca de esta lección</button>
+          <ngb-accordion #acc="ngbAccordion" activeIds="config-panel-one">
+          <div *ngFor="let itemDiscussion of blockDiscussion | paginate: { itemsPerPage: 20, currentPage: p }; let idDC = index">
+            <ngb-panel>
+              <ng-template ngbPanelTitle>
+                <span class="text-success">
+                  <h6><i class="fas fa-quote-left"></i> {{itemDiscussion.title}}</h6>
+                </span>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <small><i class="fas fa-user-circle"></i> {{itemDiscussion.user}}  <i class="far fa-clock"></i> {{itemDiscussion.when}}</small>
+                <span class="text-muted">
+                  <h5>{{itemDiscussion.text}}</h5>
+                </span>
+                <!--Seccion de comentarios-->
+                <div *ngFor="let itemComment of blockComments" class="text-success font-italic">
+                  <div *ngIf="itemDiscussion.id == itemComment.root" class="col-8 text-left">
+                    <hr>
+                    <div class="alert alert-success" role="alert">
+                      <i class="far fa-comments"></i> {{itemComment.text}} <br>
+                      <small><i class="fas fa-user-circle"></i> {{itemComment.user}}  <i class="far fa-clock"></i> {{itemComment.when}}</small>
+                      <br>
+                      <button class="btn btn-outline-success btn-sm" type="button" (click)="showReply(replyto, itemComment.id, itemComment.root)"><i class="far fa-comment"></i> Responder</button>
+                    </div>
+                    <!--Seccion de las respuestas a los comentarios-->
+                    <div *ngFor="let itemReply of blockReplys" class="text-secondary font-weight-light">
+                      <div *ngIf="itemComment.id == itemReply.replyto" class="col-8 text-right">
+                        <div class="alert alert-secondary" role="alert">
+                          <i class="far fa-comment"></i> {{itemReply.text}}<br>
+                          <small><i class="fas fa-user-circle"></i> {{itemReply.user}}  <i class="far fa-clock"></i> {{itemReply.when}}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-success btn-sm" type="button" (click)="showComment(newcomment, itemDiscussion.id)"><i class="far fa-comments"></i> Agregar un comentario</button>
+              </ng-template>
+            </ngb-panel>
+          </div>
+        </ngb-accordion>
+        <hr>
+        <div class="text-center text-success">
+          <pagination-controls (pageChange)="p = $event" previousLabel="Atras" nextLabel="Siguiente"></pagination-controls>
+        </div>
+        </ng-template>
+      </ngb-tab>
+    <!--  -->
+    </div>
+    </ngb-tabset>
+  </div>
+  <!--
+  *********************************
+  Termina la vista de las lecciones
+  *********************************
+  -->
+</div>
+
+<!--Seccion del modal para desplegar el temario al usuario desde la leccion-->
+<ng-template #content let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+  <!--Encabezado del modal-->
+  <div class="modal-header">
+    <h4 class="modal-title">Temario</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!--  -->
+  <!--Cuerpo del modal para desplegar el temario al usuario-->
+  <div class="modal-body">
+    <!--temario del curso-->
+    <ngb-accordion #acc="ngbAccordion" activeIds="config-panel-one">
+      <!--Array con el contenido del curso (temario)-->
+      <div *ngFor="let itemBlock of blockList;let indiceBlock = index">
+        <div *ngIf="itemBlock.number==0">
+          <ngb-panel>
+            <ng-template ngbPanelTitle>
+              <span class="text-success"><b>{{itemBlock.title}}</b></span>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <div *ngIf="indiceBlock==0 && !itemBlock.track" class="card-header">
+                <button type="button" class="btn btn-link enlace" (click)="getBlock(itemBlock.id, false)">
+                  <h6>
+                    <i class="far fa-flag"></i> Iniciar Curso
+                  </h6>
+                </button>
+              </div>
+              <div *ngIf="itemBlock.track" class="card-header">
+                <button type="button" class="btn btn-link enlace" (click)="getBlock(itemBlock.id, false)">
+                  <h6>
+                    <i class="far fa-calendar-check"></i> {{itemBlock.section}}.{{itemBlock.title}}
+                  </h6>
+                </button>
+              </div>
+              <div *ngIf="!itemBlock.track" class="card-header">
+                <h6>
+                  <i class="far fa-calendar-times"></i> {{itemBlock.section}}.{{itemBlock.title}}
+                </h6>
+              </div>
+              <div *ngFor="let itemBlockL of blockList">
+                <div *ngIf="itemBlockL.number !=0 && itemBlock.section == itemBlockL.section && itemBlockL.track" class="list-group-item">
+                  <button type="button" class="btn btn-link enlace" (click)="getBlock(itemBlockL.id, false)">
+                    <i class="far fa-calendar-check"></i> {{itemBlockL.section}}.{{itemBlockL.number}} {{itemBlockL.title | slice:0:40 }}
+                  </button>
+                </div>
+                <div *ngIf="itemBlockL.number !=0 && itemBlock.section == itemBlockL.section && !itemBlockL.track" class="list-group-item">
+                  <i class="far fa-calendar-times"></i> {{itemBlockL.section}}.{{itemBlockL.number}} {{itemBlockL.title | slice:0:40 }}
+                </div>
+              </div>
+            </ng-template>
+          </ngb-panel>
+        </div>
+        <div *ngIf="itemBlock.number!=0">
+          <ng-template ngbPanelContent>
+            {{itemBlock.section}}. {{itemBlock.title}}
+          </ng-template>
+        </div>
+      </div>
+      <!--Termina el array con el contenido curso-->
+    </ngb-accordion>
+  </div>
+  <!--Termina el cuerpo del modal-->
+</ng-template>
+<!--Termina modal del temario-->
+
+<!--Modal de aceptar enviar la calificacion-->
+<ng-template #accept let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+
+  <!--Encabezado del modal-->
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="fas fa-info-circle"></i> Atención</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!--  -->
+
+  <!--Cuerpo del modal para desplegar el mensaje al usuario de aviso de intento-->
+  <div class="modal-body">
+      <wizard navBarLocation="bottom">
+        <wizard-step>
+          <span class="text-success text-justify">
+            <h5>
+              <p>
+                Al envíar las respuestas estaras usando 1 de los {{maxAttempts}} intentos que tienes para realizar la evaluación
+              </p>
+              <br>
+              <p>
+                ¿Deseas continuar?
+              </p>
+            </h5>
+          </span>
+
+          <button type="button" class="btn btn-success" (click)="checkAnswersStudent()" nextStep>
+            <i class="fas fa-check"></i> Continuar
+          </button>
+
+          <button type="button" class="btn btn-success" (click)="closeDialog()">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+        </wizard-step>
+
+        <wizard-step>
+          <div *ngIf="resutlquestion" class="text-success text-center">
+
+            <h1 class="display-4">
+              <i class="fas fa-quote-left"></i> Felicidades, has aprobado la evaluación
+              <br>
+              <i class="far fa-smile"></i>
+            </h1>
+            <br>
+            <h4>Calificación obtenida: {{grade | number:'.0-2'}}</h4>
+            <h4>Total de aciertos: {{gradefinal}}</h4>
+
+          </div>
+          <div *ngIf="!resutlquestion" class="text-danger text-center">
+
+            <h1 class="display-4">
+              <i class="fas fa-quote-left"></i> Sigue intentándolo
+              <br>
+              <i class="far fa-frown"></i>
+            </h1>
+            <br>
+            <h4>Calificación obtenida: {{grade | number:'.0-2'}}</h4>
+            <h4>Total de aciertos: {{gradefinal}}</h4>
+
+          </div>
+        </wizard-step>
+      </wizard>
+  </div>
+  <!--Termina cuerpo del modal-->
+</ng-template>
+
+<!--Modal para agregar nuevas dudas o comentarios newDoubtComment-->
+<ng-template #newDoubtComment let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+
+  <!--Encabezado del modal-->
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="fas fa-tag"></i> Enviar duda o comentario comentario</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!--  -->
+
+  <!--Cuerpo del modal-->
+  <div class="modal-body">
+    <form>
+      <p>
+        <label for="title" class="text-success">* Título</label>
+        <input type="text" class="form-control" #title>
+      </p>
+      <p>
+        <label for="description" class="text-success">* Descripción de Duda o Comentario</label>
+        <textarea rows="5" class="form-control" #descr></textarea>
+      </p>
+      <button type="button" name="button" class="btn-success" (click)="setDoubt(title.value, descr.value)"><i class="far fa-share-square"></i> Enviar</button>
+    </form>
+  </div>
+  <!--Termina cuerpo del modal-->
+</ng-template>
+<!---->
+
+<!-- Modal para agregar nuevos comentarios -->
+<ng-template #newcomment let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+
+  <!--Encabezado del modal-->
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="far fa-comments"></i> Agregar comentario</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!--  -->
+
+  <!--Cuerpo del modal para agregar un nuevo comentario-->
+  <div class="modal-body">
+    <p>
+      <textarea name="name" rows="8" class="form-control" #descr></textarea>
+    </p>
+    <button type="button" name="button" class="btn btn-success" (click)="setComment(descr.value)"><i class="far fa-comments"></i> Enviar comentario</button>
+  </div>
+  <!--Termina cuerpo del modal-->
+</ng-template>
+<!--  -->
+
+<!-- Modal para agregar nuevas respuestas -->
+<ng-template #replyto let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+
+  <!--Encabezado del modal-->
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="far fa-comment"></i> Responder</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!--  -->
+
+  <!--Cuerpo del modal para agregar una respuesta-->
+  <div class="modal-body">
+    <p>
+      <input type="text" class="form-control" #descr>
+    </p>
+    <button type="button" name="button" class="btn btn-success" (click)="setReply(descr.value)"><i class="far fa-comment"></i> Responder</button>
+  </div>
+  <!--Termina cuerpo del modal-->
+</ng-template>
+<!--  -->
+
+<!--Modal para el material de apoyo del curso-->
+<ng-template #resources let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+  <!--Encabezado del modal-->
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="fas fa-paperclip"></i> Material de apoyo</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!--  -->
+
+  <!--Cuerpo del modal para desplegar el materail de apoyo-->
+  <div class="modal-body">
+    <ngb-accordion #acc="ngbAccordion" activeIds="config-panel-one">
+      <div *ngFor="let itemResources of blockResources">
+        <ngb-panel>
+          <ng-template ngbPanelTitle>
+            <span class="text-success"><b>{{itemResources.title}}</b></span>
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <div [innerHTML]="itemResources.content">
+
+            </div>
+            <div *ngIf="itemResources.embedded">
+              <iframe width="100%" height="400" [src]=" itemResources.embedded | videos" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+          </ng-template>
+        </ngb-panel>
+      </div>
+    </ngb-accordion>
+  </div>
+  <!--Termina cuerpo del modal-->
+</ng-template>
+<!---->
+
+<!--Modal Material de apoyo-->
+<ng-template #modalTask let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+  <!--Encabezado del modal-->
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="fas fa-info-circle"></i> Atención</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!--  -->
+  <!--Cuerpo del modal para el aviso de envió de evaluación de tareas-->
+  <div class="modal-body">
+    <div *ngIf="lastTaskDate && lastTaskDelivered">
+      <div class="alert alert-warning" role="alert">
+        <h6>Al enviar de nuevo el ejercicio, se estara actualizando la fecha y hora de entrega ¿Deseas continuar?</h6>
+      </div>
+      <button type="button" class="btn btn-success" (click)="sendTask(true)"><i class="fas fa-thumbtack"></i> Enviar tarea</button>
+      <button type="button" class="btn btn-success" (click)="closeDialog()"><i class="fas fa-times"></i> Cancelar</button>
+    </div>
+    <div *ngIf="!lastTaskDate && !lastTaskDelivered">
+      <div class="alert alert-secondary" role="alert">
+        <h6>Al enviar el ejercicio, se estara registrando la fecha y hora de entrega ¿Deseas continuar?</h6>
+      </div>
+      <button type="button" class="btn btn-success" (click)="sendTask(false)"><i class="fas fa-thumbtack"></i> Enviar tarea</button>
+      <button type="button" class="btn btn-success" (click)="closeDialog()"><i class="fas fa-times"></i> Cancelar</button>
+    </div>
+  </div>
+  <!--Termina cuerpo del modal-->
+</ng-template>
+<!---->

@@ -1,0 +1,215 @@
+<div class="loaderSpinner text-center text-success" *ngIf="loading">
+  <h4 style="margin-top:20%;">Procesando datos</h4>
+</div>
+<div class="container">
+  <ngb-tabset>
+    <ngb-tab>
+      <ng-template ngbTabTitle>
+        <div class="text-success">
+          <i class="fas fa-users"></i> Concentrado de usuarios
+        </div>
+      </ng-template>
+      <ng-template ngbTabContent>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="text-center">
+              <h4>{{orgUnitName}}</h4>
+              <hr>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th colspan="4">Total de usuarios registrados: {{totalUsers}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="table-secondary">
+                    <td class="text-center">Concepto</td>
+                    <td class="text-center">Total</td>
+                    <td class="text-center" colspan="2">Porcentaje %</td>
+                  </tr>
+                  <tr class="table-info">
+                    <td class="text-center">Usuarios Activos</td>
+                    <td class="text-center">{{usersOnTrack}}</td>
+                    <td class="text-center" colspan="2">{{percentOnTrack | number:'0.0-2'}}%</td>
+                  </tr>
+                  <tr class="table-danger">
+                    <td class="text-center">Usuarios Inactivos</td>
+                    <td class="text-center">{{usersInactives}}</td>
+                    <td class="text-center">{{percentInactives | number:'0.0-2'}}%</td>
+                    <td class="text-center"><button type="button" class="btn btn-outline-danger" placement="bottom" ngbTooltip="Exportar a excel" (click)="getUserInactives()" ><i class="fas fa-file-excel"></i></button></td>
+                  </tr>
+                  <tr class="table-success">
+                    <td class="text-center">Usuarios Aprobados</td>
+                    <td class="text-center">{{usersPassed}}</td>
+                    <td class="text-center" colspan="2">{{percentPassed | number:'0.0-2'}}%</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p>{{today | date:'dd-MM-yyyy HH:mm'}}</p>
+            </div>
+          </div>
+          <div class="col-md-6 text-center">
+            <h4>Usuarios Activos</h4>
+            <hr>
+            <canvas baseChart
+            [datasets]="barChartData"
+            [labels]="barChartLabels"
+            [options]="barChartOptions"
+            [legend]="barChartLegend"
+            [chartType]="barChartType"
+            [colors]="barChartColors"></canvas>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <h4>Aprobados</h4>
+            <hr>
+            <canvas baseChart
+                  [data]="doughnutChartDataPass"
+                  [labels]="doughnutChartLabelsPass"
+                  [chartType]="doughnutChartTypePass"
+                  [colors]="doughnutChartColorPass"></canvas>
+          </div>
+          <div class="col-md-8 text-center">
+            <h4>Estatus de evaluaciones / actividades</h4>
+            <hr>
+            <canvas baseChart
+                  [datasets]="barChartDataGradesbyRosters"
+                  [labels]="barChartLabelsGradesbyRosters"
+                  [options]="barChartOptionsGradesbyRosters"
+                  [legend]="barChartLegendGradesbyRosters"
+                  [chartType]="barChartTypeGradesbyRosters"
+                  [colors]="barChartColorGradesbyRosters"></canvas>
+          </div>
+        </div>
+        <br>
+        <hr>
+        <div class="text-center">
+          <h5>Estatus de usuarios por grupo</h5>
+        </div>
+        <div *ngFor="let item of registers;let idmain = index" class="row">
+          <div class="col-md-6 text-center">
+            <hr>
+            <h6>Grupo: {{item.group}}</h6>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <td colspan="2" class="text-center"><b>Datos generales</b></td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-success">
+                  <td class="text-center">Usuarios activos</td>
+                  <td class="text-center">{{item.usersOnTrack}}</td>
+                </tr>
+                <tr class="table-info">
+                  <td class="text-center">Usuarios aprobados</td>
+                  <td *ngIf="item.usersPassed" class="text-center">{{item.usersPassed}}</td>
+                  <td *ngIf="!item.usersPassed" class="text-center">0</td>
+                </tr>
+                <tr class="table-secondary">
+                  <td class="text-center">Total de Usuarios</td>
+                  <td class="text-center">{{item.totalUsers}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <button type="button" class="btn btn-outline-success blockquote" (click)="getGradesforgroup(item._id)"><i class="fas fa-users"></i> Revisar grupo</button>
+          </div>
+          <div class="col-md-6">
+            <hr>
+            <div *ngFor="let itemgraph of registerCharts; let idgraph = index">
+              <div *ngIf="idgraph == idmain">
+                <canvas baseChart
+                [data]="itemgraph"
+                [labels]="barchartlabelregister"
+                [options]="barchartoptregister"
+                [legend]="barchartlegendregister"
+                [chartType]="barcharttyperegister"
+                [colors]="barchartcolorsregister"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab>
+      <ng-template ngbTabTitle>
+        <div class="text-success">
+          <i class="fas fa-users"></i> Grupos
+        </div>
+      </ng-template>
+      <ng-template ngbTabContent>
+      <hr>
+      <h4 *ngIf="state">Estado o entidad: <small class="text-success text-capitalize font-italic font-weight-normal">{{state}}</small></h4>
+      <hr>
+      <div *ngFor="let itemReport of blockreport">
+        <h5 *ngIf="itemReport.orgUnit">Plantel: <small class="text-success text-capitalize font-italic font-weight-normal">{{itemReport.orgUnit}}</small></h5>
+        <h5>Grupo: <small class="text-success text-capitalize font-italic font-weight-normal"> <button type="button" class="btn btn-success" (click)="showGroup(group)"><i class="fas fa-users"></i> {{itemReport.group}}</button></small></h5>
+        <h5>Total de alumnos inscritos: <small class="text-success text-capitalize font-italic font-weight-normal">{{itemReport.totalStudents}}</small></h5>
+        <div class="row">
+          <div class="col-2">
+            <h6>Aprobados: <small class="text-success text-capitalize font-italic font-weight-normal">{{itemReport.studentsPassed}}</small></h6>
+          </div>
+          <div class="col-2">
+            <h6>Cursando actualmente: <small class="text-success text-capitalize font-italic font-weight-normal">{{itemReport.studentsOnTrack}}</small></h6>
+          </div>
+          <div class="col-2">
+            <h6>Promedio de este grupo: <small class="text-success text-capitalize font-italic font-weight-normal">{{itemReport.averageGrade | number:'1.0-2'}}</small></h6>
+          </div>
+          <div class="col-2">
+            <h6>Avance grupal del curso: <small class="text-success text-capitalize font-italic font-weight-normal">{{itemReport.averageTrack | number:'1.0-2'}}</small></h6>
+          </div>
+          <div class="col-2">
+            <h6>Rendimiento: <small class="text-success text-capitalize font-italic font-weight-normal">{{itemReport.efectiveness| slice:0:5}} %</small></h6>
+          </div>
+        </div>
+        <button type="button" class="btn btn-success blockquote" (click)="getReportpdf(itemReport)"><i class="fas fa-file-pdf"></i> Imprimir reporte PDF</button>
+        <button type="button" class="btn btn-success blockquote" (click)="getReportexcel(itemReport)"><i class="far fa-file-excel"></i> Exportar reporte Excel</button>
+
+          <ng-template #group let-c="close" let-d="dismiss" class="animated fast fadeIn modal-side modal-">
+
+            <div class="modal-header">
+              <h4 class="modal-title"><i class="fas fa-users"></i> Grupo {{itemReport.group}}</h4>
+              <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <h4>Curso: {{itemReport.course}}</h4>
+              <h5>Duración: {{itemReport.duration}} {{itemReport.durationUnits}}</h5>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Nombre y usuario del estudiante</th>
+                    <th>Avance del curso</th>
+                    <th>Calificación final</th>
+                    <th>Estatus</th>
+                    <th>Obtener constancia</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let itemStudent of itemReport.grades; let idS=index">
+                    <td>{{itemStudent.studentName}}</td>
+                    <td>{{itemStudent.track}} %</td>
+                    <td>{{itemStudent.finalGrade}}</td>
+                    <td>
+                      <h6 *ngIf="itemStudent.pass">Aprobado</h6>
+                      <h6 *ngIf="!itemStudent.pass">No Aprobado</h6>
+                    </td>
+                    <td>
+                      <button *ngIf="itemStudent.pass" type="button" class="btn btn-success" placement="bottom" ngbTooltip="Imprimir constancia" (click)="getCertificated(itemStudent.studentName, itemReport.course, itemReport.duration, itemStudent.passDate, itemReport.durationUnits)" ><i class="fas fa-certificate"></i></button>
+                      <button *ngIf="!itemStudent.pass" type="button" class="btn btn-success" placement="bottom" ngbTooltip="Imprimir constancia" disabled><i class="fas fa-certificate"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-template>
+        <hr>
+      </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>

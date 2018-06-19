@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="row" style="margin-top:20px;">
+    <div class="col col-3" *ngFor="let crs of curso">
+      <img [src]="crs.image" class="imagenesCurso img-fluid">
+      <hr>
+      <h5>Categoria
+        <br>
+        <small>
+          {{crs.categories}}
+        </small>
+      </h5>
+      <hr>
+      <h6>CLAVE
+        <br>
+        <small>
+          {{crs.code}}
+        </small>
+      </h6>
+    </div>
+    <!-- -->
+    <div class="col col-9" *ngFor="let crs of curso">
+      <h1 class="text-center">
+        {{crs.title}}
+      </h1>
+      <hr>
+      <ngb-tabset>
+        <ngb-tab>
+          <ng-template ngbTabTitle><h6>Descripción del curso</h6></ng-template>
+          <ng-template ngbTabContent>
+            <h5 class="text-justify" style="margin-top:25px;">
+              {{crs.description}}
+            </h5>
+          </ng-template>
+        </ngb-tab>
+        <ngb-tab>
+          <ng-template ngbTabTitle><h6>Temario</h6></ng-template>
+            <ng-template ngbTabContent>
+              <div *ngFor="let item of block" class="card">
+                <div *ngIf="item.number==0" class="card-header">
+                  <h5>
+                    {{item.section}}.{{item.title}} <span *ngIf="item.beginDate" class="text-right text-secondary"> | <i class="far fa-calendar-alt"></i> Fecha de inicio: {{item.beginDate | date}}</span> <span *ngIf="item.endDate" class="text-right text-secondary"> | <i class="far fa-calendar-alt"></i> Fecha de término: {{item.endDate | date}}</span><span *ngIf="item.duration" class="text-right text-secondary"> | <i class="far fa-clock"></i> Duración:{{item.duration}}</span>
+                  </h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li *ngIf="item.number!=0" class="list-group-item">
+                    {{item.section}}.{{item.number}} {{item.title}}
+                  </li>
+                </ul>
+              </div>
+            </ng-template>
+        </ngb-tab>
+      </ngb-tabset>
+    </div>
+  </div>
+</div>

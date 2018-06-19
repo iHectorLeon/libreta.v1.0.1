@@ -1,0 +1,60 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <button type="button" class="btn btn-success blockquote" [routerLink]="['/tutorial']">
+        <i class="fas fa-reply"></i> Regresar
+      </button>
+    </div>
+    <div class="col-md-4">
+      <h5><i class="fas fa-book"></i> Curso: <span class="text-success">{{curso}}</span></h5>
+    </div>
+    <div class="col-md-4">
+      <h5><i class="fas fa-users"></i> Grupo: <span class="text-success">{{grupo}}</span></h5>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <h6><i class="far fa-calendar-alt"></i> Fecha de inicio: <span class="text-success">{{beginDate | date:'dd-MM-yyyy'}}</span></h6>
+    </div>
+    <div class="col-sm-4">
+      <h6><i class="far fa-calendar-alt"></i> Fecha de termino: <span class="text-success">{{endDate | date:'dd-MM-yyyy'}}</span></h6>
+    </div>
+    <div class="col-sm-4">
+      <h6><i class="far fa-address-book"></i> Estudiantes de este curso: <span class="text-success">{{totalStudents}}</span></h6>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-sm-4">
+      <h6><i class="far fa-list-alt"></i> Lista de alumnos</h6>
+    </div>
+  </div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo electrónico</th>
+        <th>Avance del curso</th>
+        <th>Calificación actual</th>
+        <th>Estatus</th>
+        <th>Tareas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let itemStudent of students; let idS=index">
+        <td>{{itemStudent.name}}</td>
+        <td>{{itemStudent.username}}</td>
+        <td>{{itemStudent.track}} %</td>
+        <td>{{itemStudent.finalGrade}}</td>
+        <td>
+          <h6 *ngIf="itemStudent.pass">Aprobado</h6>
+          <h6 *ngIf="!itemStudent.pass">No Aprobado</h6>
+        </td>
+        <td>
+          <button *ngIf="itemStudent.grades.length > 0" type="button" class="btn btn-warning" placement="bottom" ngbTooltip="Revisar Tarea" (click)="setTaskReview(itemStudent.id,itemStudent.grades)"><i class="far fa-bell"></i></button>
+          <button *ngIf="!itemStudent.grades.length > 0" type="button" class="btn btn-danger" placement="bottom" ngbTooltip="Sin tarea"><i class="far fa-bell-slash"></i></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

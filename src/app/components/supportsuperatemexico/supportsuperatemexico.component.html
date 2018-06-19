@@ -1,0 +1,86 @@
+<div *ngIf="loading" class="loader"></div>
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand">
+    <img src="/assets/img/superatemexico.png" width="250" height="40" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</nav>
+<div class="container-fluid">
+  <div class="row justify-content-md-center">
+    <!--Vista para recuperar el password del usuario-->
+    <div *ngIf="operacion=='recover'" class="card" style="width: 28rem;">
+      <div class="card-body">
+        <div class="card-title">
+          <h3>
+            Recuperar contraseña
+          </h3>
+        </div>
+        <ngb-alert *ngIf="!datosOk" type="danger" (close)="datosOk = true">{{message_er}}</ngb-alert>
+        <ngb-alert *ngIf="datosOkInfo" type="success" (close)="datosOkInfo = false">{{message_inf}}</ngb-alert>
+        <form>
+
+          <div class="form-group">
+            <label for="passtxt">Nueva contraseña</label>
+            <input type="password" id="passtxt" class="form-control" #passwordTemp="ngModel" name="passwordTemp" [(ngModel)]="passtemp.passwordTemp" required>
+          </div>
+
+          <div class="form-group">
+            <label for="passntxt">Confirmar contraseña</label>
+            <input type="password" id="passntxt" class="form-control" #passwordRTemp="ngModel" name="passwordRTemp" [(ngModel)]="passtemp.passwordRTemp" required>
+          </div>
+
+          <div class="form-group">
+            <button type="button" class="btn btn-success" (click)="recoverPass()"><i class="fas fa-redo-alt"></i> Cambiar contraseña</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+    <!--  -->
+    <!--Vista para la confirmacion de usuarios cuando se registra personalmente -->
+    <div *ngIf="operacion=='confirm'" class="card" style="width: 28rem;">
+      <div class="card-body">
+        <div class="card-title">
+          <h3>
+            Ingresa tu contraseña
+          </h3>
+        </div>
+        <form>
+          <div class="form-group">
+            <label for="conttxt">Contraseña</label>
+            <input type="password" id="conttxt" class="form-control" #password="ngModel" name="password" [(ngModel)]="login.password" required>
+          </div>
+
+          <div class="form-group">
+            <button type="button" class="btn btn-success blockquote" (click)="signin()"><i class="fas fa-key"></i> Iniciar sesión</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+    <!--  -->
+    <!--Vista para la confirmacion de usuarios cuando lo registra el administrador-->
+    <div *ngIf="operacion=='userconfirm'" class="card" style="width: 28rem;">
+      <div class="card-body">
+        <div class="card-title">
+          <h3>
+            Ingresa una nueva contraseña
+          </h3>
+        </div>
+        <form>
+
+          <div class="form-group">
+            <label for="conttxt">Nueva contraseña</label>
+            <input type="password" id="conttxt" class="form-control" #password="ngModel" name="password" [(ngModel)]="login.password" required>
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-success blockquote" (click)="signin()"><i class="fas fa-key"></i> Iniciar sesión</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--  -->
+  </div>
+</div>

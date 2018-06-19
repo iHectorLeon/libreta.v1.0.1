@@ -1,0 +1,40 @@
+<div class="container animated fast fadeIn">
+  <h1 class="display-3 text-center">Cursos</h1>
+  <div class="form-group">
+    <p>
+      <input type="text" class="form-control" #wordcode placeholder="curso que busco" (keyup)="findCourse(wordcode.value)">
+    </p>
+  </div>
+  <div *ngFor="let crs of cursoslist, let id=index"  class="row animated fadeIn fast">
+    <div class="col-md-4">
+      <hr>
+      <img [src]="crs.image" class="imagenesCurso img-fluid">
+    </div>
+    <div class="col-md-8">
+      <hr>
+      <h3>{{crs.title}}</h3>
+      <p>
+        {{crs.description}}
+      </p>
+      <div class="row">
+        <div class="col">
+          <h6>Imparte <small>CONALEP</small></h6>
+        </div>
+        <div class="col">
+          <h6>Categorías <small>{{crs.categories}}</small></h6>
+        </div>
+        <div class="col">
+          <h6>CLAVE <small>{{crs.code}}</small></h6>
+        </div>
+        <div class="col">
+          <h6>Grupo <small>Grupo</small> </h6>
+        </div>
+      </div>
+      <button (click)="verCurso(crs.id)" type="button" class="btn btn-success">
+        Ir al curso
+        <i class="far fa-arrow-alt-circle-right"></i>
+      </button>
+    </div>
+    <hr>
+  </div>
+</div>

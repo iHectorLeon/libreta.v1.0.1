@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="card-deck">
+    <div *ngFor="let item of mygrouplist"  class="card">
+      <div class="card-header">
+        <div class="card-title text-justify">
+          <h6>Curso: {{item.courseTitle}}</h6>
+        </div>
+      </div>
+      <div class="card-body">
+        <h5>Plantel: {{item.orgUnit}} {{item.orgUnitName}}</h5>
+        <h6>Clave del curso: {{item.courseCode}}</h6>
+        <h6>Grupo: {{item.groupCode}}</h6>
+        <small>Total de estudiantes: {{item.numStudents}}</small>
+        <hr>
+        <button type="button" class="btn btn-success" (click)="getTasksReview(item.groupCode)">
+          <i class="fas fa-tasks"></i> Revisar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

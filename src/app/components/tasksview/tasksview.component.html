@@ -1,0 +1,43 @@
+<div class="container">
+  <button type="button" class="btn btn-success" (click)="returnTaskReview()">
+    <i class="fas fa-reply"></i> Regresar
+  </button>
+  <hr>
+
+  <ngb-alert *ngIf="messageSuccess" type="success" (close)="messageSuccess=null">
+    {{messageSuccess}}
+  </ngb-alert>
+
+  <div *ngFor="let itemTab of tabs">
+    <h5 class="text-success"><i class="fas fa-thumbtack"></i> {{itemTab.label}}</h5>
+    <div [innerHTML]="itemTab.taskText">
+
+    </div>
+    <div class="alert alert-secondary" role="alert">
+      <h6>Respuesta: </h6>
+      {{itemTab.content}}
+    </div>
+    <div class="row">
+      <div class="col-sm-3">
+        <h6><i class="far fa-calendar-alt"></i> Fecha de entrega: <small class="text-success">{{itemTab.date | date:'yyyy-MM-dd'}}</small></h6>
+      </div>
+      <div class="col-sm-3">
+        <h6><i class="far fa-folder"></i> Calificación Actual: <small class="text-success">{{itemTab.grade}}</small></h6>
+      </div>
+      <div class="col-sm-3">
+        <form class="form-inline">
+          <div class="form-group">
+            <label >Calificación (0-100) :</label>
+            <input type="text" class="form-control col-lg-3" #grade>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-3">
+        <button type="button" class="btn btn-success" (click)="saveGradetask(itemTab.taskId ,grade.value, itemTab.label)">
+          Guardar calificación
+        </button>
+      </div>
+    </div>
+    <hr>
+  </div>
+</div>
